@@ -137,9 +137,35 @@
    `margin-bottom` (0.75em globally) would stack on top of that bottom
    padding and leave an uneven gap — most visible in an empty or
    single-paragraph cell. Zero it on the LAST paragraph only, so cells with
-   several paragraphs still keep the spacing between them. */
+   several paragraphs still keep the spacing between them.
+
+   The second pair of selectors handles hover in the editor: the
+   column-resize plugin injects a `.column-resize-handle` widget as the
+   cell's final child, which knocks the paragraph out of `:last-child` and
+   makes the gap pop back on hover — so also match the paragraph sitting
+   immediately before that trailing handle.
+
+   NOTE (dev): a stricter form is possible, qualifying the handle with
+   `:last-child` so it matches only when the handle really is the cell's
+   trailing element:
+
+       .rte-content th > p:has(+ .column-resize-handle:last-child),
+       .rte-content td > p:has(+ .column-resize-handle:last-child) {
+         margin-bottom: 0;
+       }
+
+   For every table this editor actually produces the two are identical,
+   because the column-resize plugin only ever injects a SINGLE handle, and
+   always as the cell's last child. They diverge only for a `<p><handle><p>`
+   layout — a handle wedged BETWEEN two paragraphs — where the loose selector
+   used below would also zero the FIRST paragraph's margin and collapse the
+   gap before the next one, while the `:last-child` form would leave it. That
+   DOM can't occur here, so the simpler selector below is kept; switch to the
+   stricter form above if some future widget could ever sit mid-cell. */
 .rte-content th > p:last-child,
-.rte-content td > p:last-child {
+.rte-content td > p:last-child,
+.rte-content th > p:has(+ .column-resize-handle),
+.rte-content td > p:has(+ .column-resize-handle) {
   margin-bottom: 0;
 }
 

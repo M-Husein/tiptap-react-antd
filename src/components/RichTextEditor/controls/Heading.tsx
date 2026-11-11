@@ -21,7 +21,7 @@ export const Heading = forwardRef<RefSelectProps, HeadingProps>(
     return (
       <Select
         ref={ref}
-        style={{ width: 140, ...style }}
+        style={{ width: 105, ...style }}
         className={className}
         value={current}
         onChange={(level: number) => {

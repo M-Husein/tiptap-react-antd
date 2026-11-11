@@ -338,31 +338,38 @@ function Toolbar() {
       wrap 
       size={[4, 4]}
       style={{ 
-        marginBottom: 8, 
+        // marginBottom: 8, 
+        padding: 6,
         position: 'sticky',
         top: 0,
         zIndex: 1,
         background: '#fff',
+        width: '100%',
+        // borderBottom: '1px solid #ccc',
       }} 
     >
       <Heading />
-      <Divider orientation="vertical" />
-      <Bold />
-      <Italic />
-      <Underline />
-      <Strikethrough />
-      <Divider orientation="vertical" />
-      <BulletList />
-      <OrderedList />
-      <Tooltip title="Checklist">
-        <Checklist />
-      </Tooltip>
-      <Tooltip title="Code block (CodeMirror)">
-        <CodeBlockControl />
-      </Tooltip>
-      <Divider orientation="vertical" />
+      {/* <Divider orientation="vertical" /> */}
+      <Space.Compact>
+        <Bold />
+        <Italic />
+        <Underline />
+        <Strikethrough />
+      </Space.Compact>
+      {/* <Divider orientation="vertical" /> */}
+      <Space.Compact>
+        <BulletList />
+        <OrderedList />
+        <Tooltip title="Checklist">
+          <Checklist />
+        </Tooltip>
+        <Tooltip title="Code block (CodeMirror)">
+          <CodeBlockControl />
+        </Tooltip>
+      </Space.Compact>
+      {/* <Divider orientation="vertical" /> */}
       <Link />
-      <Divider orientation="vertical" />
+      {/* <Divider orientation="vertical" /> */}
       <TableControl />
       <Tooltip title="Insert image (Phase 5)">
         <ImageControl />
@@ -379,9 +386,11 @@ function Toolbar() {
       <Tooltip title="Insert math (Phase 7)">
         <MathControl />
       </Tooltip>
-      <Divider orientation="vertical" />
-      <Undo />
-      <Redo />
+      {/* <Divider orientation="vertical" /> */}
+      <Space.Compact>
+        <Undo />
+        <Redo />
+      </Space.Compact>
     </Space>
   );
 }
