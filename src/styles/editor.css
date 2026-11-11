@@ -1,0 +1,163 @@
+/**
+ * Editor-only presentation: selection, focus ring, and other editing
+ * chrome that must never appear in the Viewer (spec 8.2).
+ */
+.rte-editor .ProseMirror {
+  outline: none;
+  min-height: 120px;
+}
+
+.rte-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  height: 0;
+}
+
+.rte-editor .ProseMirror:focus {
+  outline: none;
+}
+
+/**
+ * Column-resize handles (spec: table resizable in the Editor).
+ * @tiptap/pm/tables' columnResizing plugin renders a bare
+ * `<div class="column-resize-handle">` widget with ZERO inline styling —
+ * it is completely invisible and effectively unclickable without this
+ * CSS. `position: relative` on the cell is required too: the handle is a
+ * widget decoration inserted at a position *inside* the cell, so it's
+ * absolutely positioned relative to whichever ancestor has `position:
+ * relative` — that's the cell itself, not `.tableWrapper`.
+ */
+.rte-editor .tableWrapper {
+  overflow-x: auto;
+}
+
+.rte-editor td,
+.rte-editor th {
+  position: relative;
+}
+
+.rte-editor .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  z-index: 20;
+  background-color: #1677ff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.rte-editor td:hover > .column-resize-handle,
+.rte-editor th:hover > .column-resize-handle {
+  opacity: 0.4;
+}
+
+/**
+ * Cell selection highlight. @tiptap/pm/tables decorates every cell in a
+ * CellSelection with `.selectedCell` but ships no styling for it — without
+ * this, dragging across cells (to merge) gives no visual feedback. The
+ * overlay is a pseudo-element so it never affects the cell's own layout;
+ * cells are already `position: relative` for the resize handle above.
+ */
+.rte-editor .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 119, 255, 0.18);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ---- Insert-table size picker (controls/Table.tsx) ---- */
+.rte-table-gridpicker {
+  user-select: none;
+}
+
+.rte-table-gridpicker__grid {
+  display: grid;
+  gap: 2px;
+}
+
+.rte-table-gridpicker__cell {
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 2px;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.08s, border-color 0.08s;
+}
+
+.rte-table-gridpicker__cell.is-active {
+  background: rgba(22, 119, 255, 0.25);
+  border-color: #1677ff;
+}
+
+.rte-table-gridpicker__label {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+/* ---- Contextual table toolbar (controls/TableToolbar.tsx) ---- */
+.rte-table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  z-index: 30;
+}
+
+.rte-table-toolbar__sep {
+  width: 1px;
+  align-self: stretch;
+  margin: 2px 4px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Set on the ProseMirror root while a column is actively being dragged. */
+.rte-editor .ProseMirror.resize-cursor {
+  cursor: col-resize;
+}
+
+.rte-editor .ProseMirror.resize-cursor .column-resize-handle {
+  opacity: 1;
+}
+
+/* MathLive's live <math-field> (see nodes/Math/editor/MathNodeView.tsx)
+   has its own shadow-DOM styling and deliberately looks borderless/inline
+   by default so it matches the static rendering content.css's `.rte-math`
+   rules give the Viewer; this just adds a focus affordance so it's
+   discoverable as editable. */
+.rte-editor math-field {
+  border-radius: 4px;
+}
+
+.rte-editor math-field:focus-within {
+  outline: 2px solid rgba(22, 119, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* CodeBlock (CodeMirror NodeView) — the palette, header and syntax colors
+   live in content.css so the Viewer shares them; only CodeMirror-specific
+   geometry belongs here. CodeMirror's default .cm-line has 6px left / 2px
+   right padding; zeroed/matched here so code starts at exactly the same
+   x-position as the Viewer's static lines (content.css `.rte-code-line`). */
+.rte-codeblock__editor .cm-editor {
+  background: transparent;
+}
+.rte-codeblock__editor .cm-line {
+  padding: 0 16px 0 0;
+}
+.rte-codeblock__editor .cm-scroller {
+  overflow: auto;
+}

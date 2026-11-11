@@ -1,0 +1,409 @@
+/**
+ * Shared presentation (spec 8.1 / 32): typography, spacing, and block
+ * styling that Editor and Viewer both load, so a document looks the same
+ * whether it's being edited or viewed. Editor-only chrome (selection,
+ * resize handles, NodeView controls) belongs in editor.css instead.
+ */
+.rte-content {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--rte-text-color, rgba(0, 0, 0, 0.88));
+}
+
+.rte-content p {
+  margin: 0 0 0.75em;
+}
+
+.rte-content h1,
+.rte-content h2,
+.rte-content h3,
+.rte-content h4,
+.rte-content h5,
+.rte-content h6 {
+  margin: 1.2em 0 0.5em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Explicit sizes for all six levels so Editor and Viewer agree and h5/h6
+   don't fall back to browser defaults (0.83em / 0.67em — smaller than the
+   body text they're supposed to be headings for). */
+.rte-content h1 { font-size: 2em; }
+.rte-content h2 { font-size: 1.6em; }
+.rte-content h3 { font-size: 1.35em; }
+.rte-content h4 { font-size: 1.15em; }
+.rte-content h5 { font-size: 1em; }
+.rte-content h6 { font-size: 0.9em; color: rgba(0, 0, 0, 0.65); }
+
+.rte-content blockquote {
+  margin: 0 0 0.75em;
+  padding-left: 1em;
+  border-left: 3px solid rgba(0, 0, 0, 0.15);
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.rte-content pre {
+  margin: 0 0 0.75em;
+  padding: 0.75em 1em;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.rte-content code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9em;
+}
+
+.rte-content ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0.25em;
+}
+
+.rte-content ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+/* Aligns the Ant Design Checkbox's own line-height with the first line of
+   the task item's text — the same rule serves both the Editor's NodeView
+   (nodeviews/TaskItemNodeView.tsx) and the Viewer's node renderer
+   (viewer/renderer/nodes.tsx), since both emit this class (spec 8.1:
+   Editor and Viewer must render content visually the same). */
+.rte-content .rte-task-item-checkbox {
+  display: inline-flex;
+  align-items: center;
+  padding-top: 0.2em;
+}
+
+.rte-content .rte-task-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.rte-content .rte-task-item-content > p {
+  margin: 0;
+}
+
+.rte-content li[data-checked="true"] .rte-task-item-content {
+  color: rgba(0, 0, 0, 0.45);
+  text-decoration: line-through;
+}
+
+.rte-content hr {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 1em 0;
+}
+
+.rte-content .tableWrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  position: relative;
+}
+
+.rte-content .tableWrapper table,
+.rte-content table.rte-table {
+  border-collapse: collapse;
+  /* No forced `width: 100%` here on purpose: a resizable table (Editor's
+     columnResizing plugin, or the Viewer's ResizableTable) sets its own
+     total width from its columns' explicit widths — stretching it to
+     100% of the container would fight that and make the columns' widths
+     lie about what's actually rendered. A plain non-resizable table (no
+     colgroup) still sizes naturally via `table-layout: auto`'s default. */
+  margin: 0 0 0.75em;
+}
+
+.rte-content .tableWrapper th,
+.rte-content .tableWrapper td,
+.rte-content table.rte-table th,
+.rte-content table.rte-table td {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 0.4em 0.6em;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rte-content .tableWrapper th,
+.rte-content table.rte-table th {
+  background: rgba(0, 0, 0, 0.03);
+  font-weight: 600;
+}
+
+/* The cell's own padding already spaces its content; a paragraph's
+   `margin-bottom` (0.75em globally) would stack on top of that bottom
+   padding and leave an uneven gap — most visible in an empty or
+   single-paragraph cell. Zero it on the LAST paragraph only, so cells with
+   several paragraphs still keep the spacing between them. */
+.rte-content th > p:last-child,
+.rte-content td > p:last-child {
+  margin-bottom: 0;
+}
+
+.rte-content .rte-video,
+.rte-content .rte-audio {
+  display: block;
+  margin: 0 0 0.75em;
+}
+
+/* Full width in both Editor and Viewer (spec 8.1). The exact aspect ratio
+   comes from an inline `aspect-ratio` style on the wrapper (set by
+   EmbedFrame, and by the Embed extension's renderHTML for exported HTML);
+   the width/height rules below are class-based on purpose so the iframe
+   still fills its box if a downstream sanitizer strips inline styles. */
+.rte-content .rte-embed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9; /* fallback only — inline aspect-ratio overrides it */
+  margin: 0 0 0.75em;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.rte-content .rte-embed > iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.rte-content .rte-embed-blocked {
+  padding: 1em;
+  border: 1px dashed rgba(220, 38, 38, 0.4);
+  color: rgb(220, 38, 38);
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+/* Math (spec section 21). The actual typeset glyphs come from MathLive's
+   own stylesheet — see README.md's "Adding Math" section for the exact
+   imports required (`mathlive/static.css` + `mathlive/fonts.css`); these
+   rules only handle this library's own layout around that output. */
+.rte-content .rte-math {
+  display: flex;
+  justify-content: center;
+  margin: 0.75em 0;
+  font-size: 1.1em;
+}
+
+.rte-content .rte-math-inline {
+  display: inline-block;
+}
+
+/* ==========================================================================
+   CodeBlock (spec section 24) — shared by the Editor (CodeMirror NodeView)
+   and the Viewer (static highlighted lines), so a code block looks the same
+   in both (spec 8.1). Theme = a class on `.rte-codeblock` (`--light` /
+   `--dark`), set by the NodeView / CodeBlockStatic from the runtime theme
+   choice (light | dark | system); syntax colors are the `tok-*` classes
+   CodeMirror's classHighlighter emits, used by both sides.
+   ========================================================================== */
+.rte-codeblock {
+  --rte-code-font: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --rte-code-font-size: 13.5px;
+  --rte-code-line-height: 1.6;
+  --rte-code-pad-y: 8px;
+
+  /* light (default) */
+  --rte-code-bg: #ffffff;
+  --rte-code-fg: #1f2937;
+  --rte-code-border: #e5e7eb;
+  --rte-code-caret: #1f2937;
+  --rte-code-selection: #cfe0fb;
+  --rte-code-active-line: #eaf1fc;
+  --rte-code-gutter-fg: #9aa3b2;
+  --rte-code-gutter-active-fg: #475569;
+  --rte-code-pill-bg: #eef1f6;
+  --rte-code-pill-fg: #1f2937;
+  --rte-code-copy-bg: #dbe7fb;
+  --rte-code-copy-fg: #234a99;
+  --rte-code-invalid: #dc2626;
+  --rte-tok-keyword: #6f42c1;
+  --rte-tok-string: #2c5fdc;
+  --rte-tok-number: #b4540a;
+  --rte-tok-comment: #3f7f4f;
+  --rte-tok-property: #1f7a4d;
+  --rte-tok-definition: #0b5cad;
+  --rte-tok-type: #0f766e;
+  --rte-tok-operator: #4b5563;
+  --rte-tok-meta: #6b7280;
+  --rte-tok-link: #2563eb;
+
+  border: 1px solid var(--rte-code-border);
+  border-radius: 12px;
+  background: var(--rte-code-bg);
+  color: var(--rte-code-fg);
+  margin: 0 0 0.75em;
+  overflow: hidden;
+}
+
+.rte-codeblock--dark {
+  --rte-code-bg: #282c34;
+  --rte-code-fg: #abb2bf;
+  --rte-code-border: #3b4048;
+  --rte-code-caret: #528bff;
+  --rte-code-selection: #3e4451;
+  --rte-code-active-line: #2c313c;
+  --rte-code-gutter-fg: #636d83;
+  --rte-code-gutter-active-fg: #abb2bf;
+  --rte-code-pill-bg: #353b45;
+  --rte-code-pill-fg: #d7dae0;
+  --rte-code-copy-bg: #33465f;
+  --rte-code-copy-fg: #9ec5ff;
+  --rte-code-invalid: #ff6b6b;
+  --rte-tok-keyword: #c678dd;
+  --rte-tok-string: #98c379;
+  --rte-tok-number: #d19a66;
+  --rte-tok-comment: #7f848e;
+  --rte-tok-property: #61afef;
+  --rte-tok-definition: #61afef;
+  --rte-tok-type: #e5c07b;
+  --rte-tok-operator: #56b6c2;
+  --rte-tok-meta: #8b93a3;
+  --rte-tok-link: #61afef;
+}
+
+/* --- header: language Select (or label), theme Select, Copy ------------- */
+.rte-codeblock__header-host {
+  display: block;
+}
+
+.rte-codeblock__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px 4px;
+}
+
+.rte-codeblock__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rte-codeblock__lang {
+  padding: 2px 12px;
+  border-radius: 8px;
+  background: var(--rte-code-pill-bg);
+  color: var(--rte-code-pill-fg);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.rte-codeblock .rte-codeblock__select {
+  min-width: 120px;
+  font-weight: 600;
+}
+.rte-codeblock .rte-codeblock__select--theme {
+  min-width: 88px;
+}
+.rte-codeblock .rte-codeblock__select.ant-select-filled,
+.rte-codeblock .rte-codeblock__select.ant-select-filled .ant-select-selector {
+  border-radius: 8px;
+  background: var(--rte-code-pill-bg);
+  color: var(--rte-code-pill-fg);
+}
+.rte-codeblock .rte-codeblock__select.ant-select-filled:hover,
+.rte-codeblock .rte-codeblock__select.ant-select-filled:hover .ant-select-selector {
+  background: var(--rte-code-pill-bg);
+  filter: brightness(0.97);
+}
+.rte-codeblock .rte-codeblock__select .ant-select-content,
+.rte-codeblock .rte-codeblock__select .ant-select-input,
+.rte-codeblock .rte-codeblock__select .ant-select-selection-item,
+.rte-codeblock .rte-codeblock__select .ant-select-selection-search-input {
+  color: var(--rte-code-pill-fg);
+}
+.rte-codeblock .rte-codeblock__select .ant-select-suffix,
+.rte-codeblock .rte-codeblock__select .ant-select-arrow {
+  color: var(--rte-code-gutter-fg);
+}
+
+.rte-codeblock .rte-codeblock__copy.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  background: var(--rte-code-copy-bg);
+  color: var(--rte-code-copy-fg);
+  font-weight: 600;
+}
+.rte-codeblock .rte-codeblock__copy.ant-btn:not(:disabled):hover {
+  background: var(--rte-code-copy-bg);
+  color: var(--rte-code-copy-fg);
+  filter: brightness(0.96);
+}
+
+/* --- Viewer: static highlighted lines with CSS line numbers -------------- */
+.rte-content .rte-codeblock .rte-codeblock__pre {
+  margin: 0;
+  padding: var(--rte-code-pad-y) 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  overflow-x: auto;
+  font-family: var(--rte-code-font);
+  font-size: var(--rte-code-font-size);
+  line-height: var(--rte-code-line-height);
+  counter-reset: rte-line;
+}
+
+.rte-codeblock .rte-codeblock__pre code {
+  display: block;
+  min-width: max-content;
+  padding: 0;
+  background: none;
+  font: inherit;
+}
+
+.rte-codeblock .rte-code-line {
+  display: block;
+  min-height: calc(var(--rte-code-line-height) * 1em);
+  padding-right: 16px;
+  white-space: pre;
+  counter-increment: rte-line;
+}
+
+/* Same geometry as CodeMirror's gutter in the Editor (editor.css / the
+   theme in CodeBlockView.ts): right-aligned, 3ch min, 16px | 12px padding. */
+.rte-codeblock .rte-code-line::before {
+  content: counter(rte-line);
+  display: inline-block;
+  box-sizing: content-box;
+  min-width: 3ch;
+  padding: 0 12px 0 16px;
+  text-align: right;
+  color: var(--rte-code-gutter-fg);
+  user-select: none;
+}
+
+/* --- syntax colors: CodeMirror's classHighlighter `tok-*` classes -------- */
+.rte-codeblock .tok-keyword,
+.rte-codeblock .tok-atom,
+.rte-codeblock .tok-bool,
+.rte-codeblock .tok-labelName { color: var(--rte-tok-keyword); }
+.rte-codeblock .tok-string,
+.rte-codeblock .tok-string2,
+.rte-codeblock .tok-literal { color: var(--rte-tok-string); }
+.rte-codeblock .tok-number { color: var(--rte-tok-number); }
+.rte-codeblock .tok-comment { color: var(--rte-tok-comment); }
+.rte-codeblock .tok-propertyName { color: var(--rte-tok-property); }
+.rte-codeblock .tok-variableName.tok-definition,
+.rte-codeblock .tok-macroName { color: var(--rte-tok-definition); }
+.rte-codeblock .tok-typeName,
+.rte-codeblock .tok-className,
+.rte-codeblock .tok-namespace { color: var(--rte-tok-type); }
+.rte-codeblock .tok-operator { color: var(--rte-tok-operator); }
+.rte-codeblock .tok-meta { color: var(--rte-tok-meta); }
+.rte-codeblock .tok-link,
+.rte-codeblock .tok-url { color: var(--rte-tok-link); text-decoration: underline; }
+.rte-codeblock .tok-heading,
+.rte-codeblock .tok-strong { font-weight: 700; }
+.rte-codeblock .tok-emphasis { font-style: italic; }
+.rte-codeblock .tok-inserted { color: var(--rte-tok-string); }
+.rte-codeblock .tok-deleted,
+.rte-codeblock .tok-invalid { color: var(--rte-code-invalid); }

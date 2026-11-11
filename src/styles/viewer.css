@@ -1,0 +1,48 @@
+/**
+ * Viewer-only presentation tweaks (rare — most styling should live in
+ * content.css so Editor/Viewer stay visually identical, per spec 8.1).
+ */
+.rte-viewer {
+  cursor: default;
+}
+
+.rte-viewer a {
+  cursor: pointer;
+}
+
+/**
+ * Column-resize handles for the Viewer's read-only table (see
+ * editor/extensions/table-viewer-resize.tsx's ResizableTable) — a plain
+ * React/pointer-events implementation since the Viewer has no ProseMirror
+ * instance to reuse the Editor's own columnResizing plugin from. Visual
+ * intent mirrors the Editor's `.column-resize-handle` styling in
+ * editor.css (hover-to-reveal, subtle brand-blue) so a resizable table
+ * *looks* the same regardless of which context is doing the resizing —
+ * only the mechanism differs.
+ */
+.rte-table-resizable-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.rte-table-resize-handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rte-table-resize-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  margin-left: -4px;
+  cursor: col-resize;
+  pointer-events: auto;
+}
+
+.rte-table-resize-handle:hover,
+.rte-table-resize-handle:active {
+  background: rgba(22, 119, 255, 0.35);
+}
